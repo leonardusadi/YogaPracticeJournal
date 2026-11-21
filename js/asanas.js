@@ -1,0 +1,236 @@
+// The built-in asana library. Each entry: [id, Sanskrit name, English name,
+// category, sided?, pose]. Pose format is documented in figure.js.
+
+export const CATEGORIES = [
+  ['standing', 'Standing'],
+  ['seated', 'Seated'],
+  ['forward', 'Forward bends'],
+  ['twist', 'Twists'],
+  ['arm', 'Arms & core'],
+  ['backbend', 'Backbends'],
+  ['inversion', 'Inversions'],
+  ['supine', 'Supine & restorative'],
+  ['custom', 'My asanas'],
+];
+
+const UP_L = [80, 70];
+const UP_R = [100, 110];
+const CROSS_L = [[-170, 0.8], [-15, 0.8], [0, 0.3]];
+const CROSS_R = [[-10, 0.8], [-165, 0.8], [180, 0.3]];
+const WIDE_L = [-125, -125, [-160, 0.6]];
+const WIDE_R = [-55, -55, 0];
+const LUNGE_L = [-146, -146, [-160, 0.6]];
+const LUNGE_R = [-8, -90, 0];
+
+const A = [
+  // ---- standing ----
+  ['tadasana', 'Tadasana', 'Mountain pose', 'standing', 0,
+    { v: 'f', lL: [-88, -90], lR: [-92, -90] }],
+  ['urdhva_hastasana', 'Urdhva Hastasana', 'Arms overhead', 'standing', 0,
+    { v: 'f', lL: [-88, -90], lR: [-92, -90], aL: [97, 93], aR: [83, 87] }],
+  ['urdhva_baddhanguliyasana', 'Urdhva Baddhanguliyasana', 'Interlocked fingers overhead', 'standing', 0,
+    { v: 'f', lL: [-88, -90], lR: [-92, -90], aL: UP_L, aR: UP_R }],
+  ['paschima_namaskarasana', 'Paschima Namaskarasana', 'Reverse prayer', 'standing', 0,
+    { v: 'f', lL: [-88, -90], lR: [-92, -90], aL: [[-108, 0.9], [22, 0.62]], aR: [[-72, 0.9], [158, 0.62]], z: 'lL lR aL aR t h' }],
+  ['vrksasana', 'Vrksasana', 'Tree pose', 'standing', 1,
+    { v: 'f', lL: [-88, -90], lR: [-32, 172, [-90, 0.5]], aL: UP_L, aR: UP_R }],
+  ['utkatasana', 'Utkatasana', 'Chair pose', 'standing', 0,
+    { s: [72, 68], h: 68, a: [66, 66], l: [-35, -110, 0] }],
+  ['utthita_trikonasana', 'Utthita Trikonasana', 'Triangle pose', 'standing', 1,
+    { v: 'f', lL: WIDE_L, lR: WIDE_R, s: [34, 24], h: 24, aL: [92, 92], aR: [-88, -88] }],
+  ['utthita_parsvakonasana', 'Utthita Parsvakonasana', 'Extended side angle', 'standing', 1,
+    { v: 'f', lL: LUNGE_L, lR: LUNGE_R, s: [48, 40], h: 40, aL: [40, 40], aR: { to: 'floor', dx: 0.35, fit: 1 } }],
+  ['virabhadrasana_1', 'Virabhadrasana I', 'Warrior I', 'standing', 1,
+    { s: [90, 94], h: 98, a: [92, 92], lR: [-8, -90, 0], lL: [-145, -145, 0] }],
+  ['virabhadrasana_2', 'Virabhadrasana II', 'Warrior II', 'standing', 1,
+    { v: 'f', lL: LUNGE_L, lR: LUNGE_R, aL: [180, 180], aR: [0, 0] }],
+  ['virabhadrasana_3', 'Virabhadrasana III', 'Warrior III', 'standing', 1,
+    { s: [0, 0], h: 8, a: [0, 0], lR: [-90, -90, 0], lL: [180, 180, [-90, 0.8]] }],
+  ['ardha_chandrasana', 'Ardha Chandrasana', 'Half moon', 'standing', 1,
+    { v: 'f', s: [6, 2], h: 4, lR: [-90, -90, 0], lL: [178, 178, [-90, 0.6]], aL: [90, 90], aR: { to: 'floor', dx: 0.3, fit: 1 } }],
+  ['parivrtta_trikonasana', 'Parivrtta Trikonasana', 'Revolved triangle', 'standing', 1,
+    { v: 'f', lL: [-118, -118, [-160, 0.6]], lR: [-62, -62, 0], s: [14, 6], h: 8, sw: 0.55, aL: [92, 92], aR: { to: 'floor', dx: 0.35, fit: 1 } }],
+  ['parivrtta_parsvakonasana', 'Parivrtta Parsvakonasana', 'Revolved side angle', 'standing', 1,
+    { s: [36, 30], h: 30, lR: [-8, -90, 0], lL: [-146, -146, [-60, 0.7]], aR: [30, 30], aL: { to: 'floor', dx: 0.2, fit: 1 } }],
+  ['parsvottanasana', 'Parsvottanasana', 'Intense side stretch', 'standing', 1,
+    { s: [-52, -74], h: -82, lR: [-68, -68, 0], lL: [-112, -112, 0], a: [[128, 0.75], [-12, 0.45]], z: 'lL lR aL t h aR' }],
+  ['prasarita_padottanasana', 'Prasarita Padottanasana', 'Wide-legged forward bend', 'standing', 0,
+    { v: 'f', lL: WIDE_L, lR: [-55, -55, [-20, 0.6]], s: [[-90, 0.7], [-90, 0.7]], h: [-90, 0.95], sw: 0.75, aL: { to: 'floor', dx: 0.25, fit: 1 }, aR: { to: 'floor', dx: -0.25, fit: 1 }, z: 'lL lR t aL aR h' }],
+  ['uttanasana', 'Uttanasana', 'Standing forward bend', 'standing', 0,
+    { s: [-62, -86], h: -96, a: { to: 'floor', dx: -0.5, fit: 1 }, z: 'lL lR t h aL aR' }],
+  ['ardha_uttanasana', 'Ardha Uttanasana', 'Half forward bend', 'standing', 0,
+    { s: [-22, -6], h: 14, a: { to: 'floor', dx: 0.1, fit: 1 } }],
+  ['padangusthasana', 'Padangusthasana', 'Big toe pose', 'standing', 0,
+    { s: [-54, -78], h: -64, a: [[-150, 0.6], [-58, 0.86]], z: 'lL lR t h aL aR' }],
+  ['garudasana', 'Garudasana', 'Eagle pose', 'standing', 1,
+    { v: 'f', s: [90, 90], lL: [-78, -96], lR: [[-112, 0.95], [-70, 0.9], [-160, 0.4]], aL: [[-20, 0.55], [95, 0.9]], aR: [[-160, 0.55], [85, 0.9]] }],
+  ['utthita_hasta_padangusthasana', 'Utthita Hasta Padangusthasana', 'Hand to big toe', 'standing', 1,
+    { lL: [-90, -90, 0], lR: [36, 36, 120], aR: { to: 'toeR', b: -1 }, aL: [-110, -70] }],
+  ['utthita_parsva_hasta_padangusthasana', 'Utthita Parsva Hasta Padangusthasana', 'Hand to big toe, leg to the side', 'standing', 1,
+    { v: 'f', lL: [-88, -90], lR: [18, 18, [90, 0.6]], aR: { to: 'ankleR', fit: 1 }, aL: [180, 180] }],
+  ['parighasana', 'Parighasana', 'Gate pose', 'standing', 1,
+    { v: 'f', lL: [-90, [-90, 0.08], [-90, 0.1]], lR: [-31, -31, [60, 0.7]], s: [62, 36], h: 30, aL: [28, 14], aR: [-36, -30] }],
+  ['malasana', 'Malasana', 'Garland squat', 'standing', 0,
+    { s: [66, 60], h: 68, l: [30, -108, 0], a: [[-48, 0.9], [100, 0.55]] }],
+  ['natarajasana', 'Natarajasana', 'Lord of the dance', 'standing', 1,
+    { s: [70, 86], h: 82, lR: [-90, -90, 0], lL: [196, 78, 78], aL: { to: 'ankleL', b: 1 }, aR: [28, 28] }],
+
+  // ---- seated ----
+  ['dandasana', 'Dandasana', 'Staff pose', 'seated', 0,
+    { l: [0, 0, 90], a: { to: 'floor', dx: -0.3, fit: 1 } }],
+  ['sukhasana', 'Sukhasana', 'Easy cross-legged', 'seated', 0,
+    { v: 'f', lL: CROSS_L, lR: CROSS_R, aL: { to: 'kneeL', fit: 1, off: [0.2, 0.3] }, aR: { to: 'kneeR', fit: 1, off: [-0.2, 0.3] } }],
+  ['parvatasana', 'Parvatasana', 'Seated mountain', 'seated', 0,
+    { v: 'f', lL: CROSS_L, lR: CROSS_R, aL: UP_L, aR: UP_R }],
+  ['padmasana', 'Padmasana', 'Lotus pose', 'seated', 0,
+    { v: 'f', lL: [[-172, 0.85], [10, 0.85], [20, 0.3]], lR: [[-8, 0.85], [170, 0.85], [160, 0.3]], aL: { to: 'kneeL', fit: 1, off: [0.1, 0.3] }, aR: { to: 'kneeR', fit: 1, off: [-0.1, 0.3] } }],
+  ['virasana', 'Virasana', 'Hero pose', 'seated', 0,
+    { l: [-7, 180, 180], a: { to: 'kneeR', fit: 1, off: [-0.7, 0.4] } }],
+  ['baddha_konasana', 'Baddha Konasana', 'Bound angle', 'seated', 0,
+    { v: 'f', lL: [[-176, 0.95], [-6, 0.9], [-90, 0.25]], lR: [[-4, 0.95], [-174, 0.9], [-90, 0.25]], aL: { to: 'ankleL', fit: 1, off: [0, 0.3] }, aR: { to: 'ankleR', fit: 1, off: [0, 0.3] } }],
+  ['upavistha_konasana', 'Upavistha Konasana', 'Seated wide angle', 'seated', 0,
+    { v: 'f', lL: [[-166, 0.85], [-166, 0.85], [90, 0.7]], lR: [[-14, 0.85], [-14, 0.85], [90, 0.7]], aL: { to: 'floor', dx: -0.8, fit: 1 }, aR: { to: 'floor', dx: 0.8, fit: 1 } }],
+  ['gomukhasana', 'Gomukhasana', 'Cow face pose', 'seated', 1,
+    { v: 'f', lL: [[-62, 0.35], [-12, 0.85], [0, 0.4]], lR: [[-118, 0.35], [-168, 0.85], [180, 0.4]], aL: [[78, 0.95], [-70, 0.7]], aR: [[-78, 0.95], [112, 0.6]], z: 'aL aR lL lR t h' }],
+  ['paripurna_navasana', 'Paripurna Navasana', 'Full boat', 'seated', 0,
+    { s: [122, 118], h: 112, l: [38, 38, 38], a: [2, 2] }],
+  ['ardha_navasana', 'Ardha Navasana', 'Half boat', 'seated', 0,
+    { s: [152, 140], h: 125, l: [18, 18, 18], a: [[70, 0.6], [165, 0.55]] }],
+  ['ubhaya_padangusthasana', 'Ubhaya Padangusthasana', 'Both big toes', 'seated', 0,
+    { s: [112, 108], h: 105, l: [58, 58, 58], a: { to: 'toeR', b: -1 } }],
+  ['krounchasana', 'Krounchasana', 'Heron pose', 'seated', 1,
+    { s: [92, 88], h: 86, lL: [-7, 180, 180], lR: [70, 70, 70], a: { to: 'toeR', fit: 1 } }],
+  ['hanumanasana', 'Hanumanasana', 'Front splits', 'seated', 1,
+    { lR: [-2, -2, 60], lL: [182, 182, 182], a: [92, 92] }],
+  ['adho_mukha_virasana', 'Adho Mukha Virasana', 'Downward hero / child', 'seated', 0,
+    { s: [8, -14], h: -30, l: [-20, 180, 180], a: { to: 'floor', dx: 3.6, fit: 1 } }],
+
+  // ---- forward bends ----
+  ['janu_sirsasana', 'Janu Sirsasana', 'Head to knee', 'forward', 1,
+    { s: [38, 12], h: -4, lL: [0, 0, 90], lR: [[-28, 0.5], [-158, 0.55], [180, 0.4]], a: { to: 'toeL', fit: 1 }, z: 'lL aL t h lR aR' }],
+  ['paschimottanasana', 'Paschimottanasana', 'Seated forward bend', 'forward', 0,
+    { s: [30, 6], h: -8, l: [0, 0, 90], a: { to: 'toeR', fit: 1 } }],
+  ['trianga_mukhaikapada_paschimottanasana', 'Trianga Mukhaikapada Paschimottanasana', 'Three-limbed forward bend', 'forward', 1,
+    { s: [32, 8], h: -6, lL: [0, 0, 90], lR: [-7, 180, 180], a: { to: 'toeL', fit: 1 } }],
+  ['marichyasana_1', 'Marichyasana I', 'Sage Marichi I', 'forward', 1,
+    { s: [44, 18], h: 0, lL: [0, 0, 90], lR: [62, -100, 0], a: { to: 'toeL', fit: 1 }, z: 'lL aL t h lR aR' }],
+
+  // ---- twists ----
+  ['bharadvajasana_1', 'Bharadvajasana I', 'Sage Bharadvaja twist', 'twist', 1,
+    { v: 'f', lL: [[-40, 0.5], [-176, 0.95], [180, 0.4]], lR: [[-55, 0.5], [-170, 0.8], [180, 0.4]], aL: { to: 'kneeR', fit: 1, off: [0, 0.3] }, aR: { to: 'floor', dx: 0.8, fit: 1 } }],
+  ['marichyasana_3', 'Marichyasana III', 'Sage Marichi III twist', 'twist', 1,
+    { lL: [0, 0, 90], lR: [62, -100, 0], aL: [-28, 82], aR: { to: 'floor', dx: -1.3, b: 1 }, z: 'lL t h lR aL aR' }],
+  ['ardha_matsyendrasana_1', 'Ardha Matsyendrasana I', 'Half lord of the fishes', 'twist', 1,
+    { lL: [-4, 176, 180], lR: [66, -96, 0], aL: [-30, 84], aR: { to: 'floor', dx: -1.3, b: 1 }, z: 'lL t h lR aL aR' }],
+  ['jathara_parivartanasana', 'Jathara Parivartanasana', 'Revolved abdomen', 'twist', 1,
+    { v: 'f', top: 1, aL: [180, 180], aR: [0, 0], lL: [6, 4, [90, 0.5]], lR: [-10, -8, [90, 0.5]] }],
+
+  // ---- arms & core ----
+  ['adho_mukha_svanasana', 'Adho Mukha Svanasana', 'Downward-facing dog', 'arm', 0,
+    { s: [-38, -36], h: -50, l: [-120, -120, 0], a: [-34, -34] }],
+  ['urdhva_mukha_svanasana', 'Urdhva Mukha Svanasana', 'Upward-facing dog', 'arm', 0,
+    { s: [60, 86], h: 104, l: [-163, -163, 180], a: [-90, -90] }],
+  ['phalakasana', 'Phalakasana', 'Plank', 'arm', 0,
+    { s: [25.5, 25.5], h: 20, l: [-154.5, -154.5, [-90, 1]], a: [-90, -90] }],
+  ['chaturanga_dandasana', 'Chaturanga Dandasana', 'Four-limbed staff', 'arm', 0,
+    { s: [3, 3], h: 8, l: [-175, -175, [-90, 1]], a: [176, [-90, 0.68]] }],
+  ['vasisthasana', 'Vasisthasana', 'Side plank', 'arm', 1,
+    { v: 'f', sw: 0.35, hw: 0.14, s: [28, 28], h: 28, lL: [-152, -152, [-90, 1]], lR: [-152, -152, [-90, 1]], aL: [90, 90], aR: [-90, -90] }],
+  ['purvottanasana', 'Purvottanasana', 'Reverse plank', 'arm', 0,
+    { s: [152, 152], h: 172, l: [-28, -28, -40], a: [-90, -90] }],
+  ['bakasana', 'Bakasana', 'Crane pose', 'arm', 0,
+    { s: [10, -38], h: 4, l: [-52, 160, -170], a: [-122, -98] }],
+
+  // ---- backbends ----
+  ['bhujangasana', 'Bhujangasana', 'Cobra', 'backbend', 0,
+    { s: [22, 66], h: 96, l: [180, 180, 180], a: { to: 'floor', dx: 0.1, b: -1 } }],
+  ['salabhasana', 'Salabhasana', 'Locust', 'backbend', 0,
+    { s: [16, 32], h: 44, l: [168, 168, 168], a: [176, 170] }],
+  ['dhanurasana', 'Dhanurasana', 'Bow pose', 'backbend', 0,
+    { s: [34, 62], h: 84, l: [158, 66, 66], a: { to: 'ankleR', b: -1 } }],
+  ['ustrasana', 'Ustrasana', 'Camel pose', 'backbend', 0,
+    { s: [100, 142], h: 196, l: [-90, 180, 180], a: { to: 'ankleR', b: 1, off: [0, 0.2] } }],
+  ['urdhva_dhanurasana', 'Urdhva Dhanurasana', 'Upward bow / wheel', 'backbend', 0,
+    { s: [164, 204], h: -112, l: [-40, -86, 0], a: { to: 'floor', dx: -0.9, fit: 1 } }],
+  ['dwi_pada_viparita_dandasana', 'Dwi Pada Viparita Dandasana', 'Two-legged inverted staff', 'backbend', 0,
+    { s: [174, 246], h: -96, l: [-22, -68, 0], a: [[-128, 0.9], [4, 0.5]] }],
+  ['setu_bandha_sarvangasana', 'Setu Bandha Sarvangasana', 'Bridge pose', 'backbend', 0,
+    { s: [196, 216], h: 180, l: [12, -90, 0], a: [-10, 2] }],
+  ['matsyasana', 'Matsyasana', 'Fish pose', 'backbend', 0,
+    { s: [166, 198], h: 236, l: [0, 0, 30], a: [-18, 4] }],
+  ['eka_pada_rajakapotasana_1', 'Eka Pada Rajakapotasana I', 'One-legged king pigeon', 'backbend', 1,
+    { s: [82, 96], h: 100, lR: [[-6, 0.9], [176, 0.7], [180, 0.5]], lL: [-176, -178, 180], a: { to: 'floor', dx: 0.4, fit: 1 } }],
+  ['supta_virasana', 'Supta Virasana', 'Reclining hero', 'backbend', 0,
+    { s: [180, 180], h: 180, l: [0, 180, 180], a: [176, 180] }],
+
+  // ---- inversions ----
+  ['adho_mukha_vrksasana', 'Adho Mukha Vrksasana', 'Handstand', 'inversion', 0,
+    { s: [-90, -90], h: -90, l: [90, 90, 90], a: [-90, -90] }],
+  ['pincha_mayurasana', 'Pincha Mayurasana', 'Forearm balance', 'inversion', 0,
+    { s: [-90, -90], h: [-100, 0.8], l: [90, 90, 90], a: [-90, 0] }],
+  ['salamba_sirsasana', 'Salamba Sirsasana', 'Headstand', 'inversion', 0,
+    { s: [-90, -90], h: -90, l: [90, 90, 90], a: [[-48, 0.98], [180, 0.5]] }],
+  ['urdhva_dandasana', 'Urdhva Dandasana', 'Upward staff in headstand', 'inversion', 0,
+    { s: [-90, -90], h: -90, l: [0, 0, 0], a: [[-48, 0.98], [180, 0.5]] }],
+  ['eka_pada_sirsasana', 'Eka Pada Sirsasana', 'One leg down in headstand', 'inversion', 1,
+    { s: [-90, -90], h: -90, lL: [90, 90, 90], lR: [-52, -52, [-90, 0.6]], a: [[-48, 0.98], [180, 0.5]] }],
+  ['salamba_sarvangasana', 'Salamba Sarvangasana', 'Shoulderstand', 'inversion', 0,
+    { s: [-90, -90], h: 180, l: [90, 90, 90], a: [0, [98, 0.72]] }],
+  ['eka_pada_sarvangasana', 'Eka Pada Sarvangasana', 'One-legged shoulderstand', 'inversion', 1,
+    { s: [-90, -90], h: 180, lL: [90, 90, 90], lR: [-143, -143, [-90, 1]], a: [0, [98, 0.72]] }],
+  ['halasana', 'Halasana', 'Plough pose', 'inversion', 0,
+    { s: [-82, -90], h: 180, l: [-144, -144, [-90, 1]], a: [0, 0] }],
+  ['karnapidasana', 'Karnapidasana', 'Ear-pressure pose', 'inversion', 0,
+    { s: [-58, -72], h: 180, l: [-98, 178, 180], a: [0, 0] }],
+  ['viparita_karani', 'Viparita Karani', 'Legs up the wall', 'inversion', 0,
+    { s: [190, 176], h: 180, l: [88, 88, 180], a: [176, 180], props: [['wall', 'ankleR', 0.3]] }],
+
+  // ---- supine & restorative ----
+  ['savasana', 'Savasana', 'Corpse pose', 'supine', 0,
+    { s: [180, 180], h: 180, l: [0, 0, 40], a: [-8, 0] }],
+  ['supta_baddha_konasana', 'Supta Baddha Konasana', 'Reclining bound angle', 'supine', 0,
+    { v: 'f', top: 1, lL: [-150, -30, [-90, 0.3]], lR: [-30, -150, [-90, 0.3]], aL: [-125, -120], aR: [-55, -60] }],
+  ['supta_padangusthasana_1', 'Supta Padangusthasana I', 'Reclining hand to big toe', 'supine', 1,
+    { s: [180, 180], h: 180, lL: [0, 0, 40], lR: [112, 112, 200], aR: { to: 'toeR', fit: 1 }, aL: [-8, 0] }],
+  ['supta_padangusthasana_2', 'Supta Padangusthasana II', 'Reclining leg to the side', 'supine', 1,
+    { v: 'f', top: 1, lL: [-90, -90, [-90, 0.4]], lR: [14, 14, [90, 0.5]], aR: { to: 'ankleR', fit: 1 }, aL: [180, 180] }],
+  ['urdhva_prasarita_padasana', 'Urdhva Prasarita Padasana', 'Upward extended legs', 'supine', 0,
+    { s: [180, 180], h: 180, l: [90, 90, 180], a: [178, 180] }],
+  ['anantasana', 'Anantasana', 'Side-reclining leg lift', 'supine', 1,
+    { s: [180, 180], h: [146, 1], lL: [0, 0, 30], lR: [108, 108, 200], aR: { to: 'toeR', fit: 1 }, aL: [[180, 0.6], [86, 0.5]], z: 'lL t aL h lR aR' }],
+];
+
+export const ASANAS = A.map(([id, name, en, cat, sided, pose]) => ({ id, name, en, cat, sided: !!sided, pose }));
+
+// Hand-traced copies of the owner's own sketches, used as first samples.
+export const SKETCH_SEEDS = {
+  adho_mukha_svanasana: [
+    [[[185, 270], [335, 88], [535, 272]], circle(430, 210, 32)],
+    [[[658, 287], [790, 143], [928, 302]]],
+    [[[1008, 320], [1115, 128], [1265, 310]], circle(1058, 220, 28)],
+  ],
+  uttanasana: [
+    [[[135, 238], [113, 470]], [[25, 330], [128, 255]], [[22, 400], [118, 322]], [[18, 438], [112, 366]],
+      [[145, 388], [318, 272]], circle(328, 280, 28), [[268, 330], [268, 468]], [[145, 388], [290, 542]]],
+    [[[527, 268], [508, 538]], [[472, 356], [534, 294]], [[476, 426], [532, 368]],
+      [[512, 405], [655, 250]], circle(672, 268, 35), [[597, 330], [590, 440]], [[512, 405], [622, 555]]],
+    [[[905, 377], [1060, 228]], circle(1083, 240, 32), [[1002, 298], [985, 512]], [[905, 377], [1028, 618]]],
+  ],
+  upavistha_konasana: [
+    [circle(378, 133, 38), [[337, 160], [218, 340]], [[323, 205], [357, 387]], [[240, 320], [467, 230]], [[205, 335], [405, 537]]],
+    [circle(855, 133, 35), [[832, 160], [752, 415]], [[845, 258], [958, 385]], [[735, 417], [1048, 252]], [[1048, 170], [1048, 255]],
+      [[775, 428], [1085, 582]], [[1088, 495], [1090, 588]]],
+  ],
+  utthita_trikonasana: [
+    [[[200, 643], [665, 178]], circle(680, 165, 38), [[568, 265], [568, 540]], [[400, 418], [632, 688]]],
+  ],
+};
+
+function circle(cx, cy, r) {
+  const pts = [];
+  for (let i = 0; i <= 14; i++) {
+    const a = (i / 14) * Math.PI * 2;
+    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+  return pts;
+}
