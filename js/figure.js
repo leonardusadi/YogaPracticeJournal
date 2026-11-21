@@ -4,12 +4,9 @@
 // Angles are degrees, 0 = right, 90 = up. Side-view figures face right.
 // A segment is either a number (angle) or [angle, lengthScale] for foreshortening.
 
-const LEN = { s1: 1.45, s2: 1.45, neck: 1.0, head: 0.6, ua: 1.95, fa: 2.05, th: 2.35, sh: 2.25, ft: 0.8 };
-const R = {
-  hip: 0.5, waist: 0.45, chest: 0.56, neck: 0.2,
-  th0: 0.42, th1: 0.29, sh1: 0.18, ft1: 0.14,
-  ua0: 0.27, ua1: 0.21, fa1: 0.15, hand: 0.19,
-};
+const LEN = { s1: 1.45, s2: 1.45, neck: 1.15, head: 0.85, ua: 1.95, fa: 2.05, th: 2.35, sh: 2.25, ft: 0.8 };
+const LINE = 0.26; // stroke width, in figure units
+const HALF = LINE / 2;
 
 const rad = (d) => (d * Math.PI) / 180;
 const vec = (deg, len = 1) => [Math.cos(rad(deg)) * len, Math.sin(rad(deg)) * len];
@@ -34,8 +31,8 @@ function ik(shoulder, target, l1, l2, bend) {
 // Solve a pose description into joint positions (y up, ground at y = 0).
 export function solve(p) {
   const front = p.v === 'f';
-  const sw = p.sw ?? (front ? 0.9 : 0);
-  const hw = p.hw ?? (front ? 0.45 : 0);
+  const sw = p.sw ?? 0;
+  const hw = p.hw ?? (front ? 0.2 : 0);
   const J = {};
   const s = p.s ?? [90, 90];
   const [a1, k1] = seg(s[0]);
@@ -62,7 +59,7 @@ export function solve(p) {
     J['toe' + side] = add(J['ankle' + side], vec(fa, LEN.ft * fk));
   }
 
-  const armSpec = (side) => p['a' + side] ?? p.a ?? (front ? (side === 'L' ? [-97, -94] : [-83, -86]) : [-90, -90]);
+  const armSpec = (side) => p['a' + side] ?? p.a ?? (front ? (side === 'L' ? [-107, -100] : [-73, -80]) : [-90, -90]);
   const deferred = [];
   for (const side of ['L', 'R']) {
     const spec = armSpec(side);
@@ -76,12 +73,7 @@ export function solve(p) {
 
   const lowest = () => {
     let m = Infinity;
-    const chk = (pt2, r) => { if (pt2) m = Math.min(m, pt2[1] - r); };
-    chk(J.P, R.hip); chk(J.M, R.waist); chk(J.C, R.chest); chk(J.H, LEN.head);
-    for (const sd of ['L', 'R']) {
-      chk(J['knee' + sd], R.th1); chk(J['ankle' + sd], R.sh1); chk(J['toe' + sd], R.ft1);
-      chk(J['elbow' + sd], R.ua1); chk(J['hand' + sd], R.hand);
-    }
+    for (const [key, pt2] of Object.entries(J)) m = Math.min(m, pt2[1] - (key === 'H' ? LEN.head : HALF));
     return m;
   };
 
@@ -90,7 +82,7 @@ export function solve(p) {
     for (const [side, spec] of deferred) {
       const sh = J['sh' + side];
       let target;
-      if (spec.to === 'floor') target = [sh[0] + (spec.dx ?? 0), ground + R.hand];
+      if (spec.to === 'floor') target = [sh[0] + (spec.dx ?? 0), ground + HALF];
       else target = add(J[spec.to], spec.off ?? [0, 0]);
       let k = spec.k ?? 1;
       if (spec.fit) {
@@ -110,31 +102,10 @@ export function solve(p) {
 
 // --- drawing ---------------------------------------------------------------
 
-function capsule(a, b, r1, r2) {
-  // a, b in screen coords (y down)
-  const dx = b[0] - a[0];
-  const dy = b[1] - a[1];
-  const d = Math.hypot(dx, dy);
-  const f = (n) => n.toFixed(2);
-  if (d < 1e-3) {
-    const r = Math.max(r1, r2);
-    return `M${f(a[0] - r)} ${f(a[1])}a${f(r)} ${f(r)} 0 1 0 ${f(2 * r)} 0a${f(r)} ${f(r)} 0 1 0 ${f(-2 * r)} 0Z`;
-  }
-  const nx = -dy / d;
-  const ny = dx / d;
-  return (
-    `M${f(a[0] + nx * r1)} ${f(a[1] + ny * r1)}` +
-    `L${f(b[0] + nx * r2)} ${f(b[1] + ny * r2)}` +
-    `A${f(r2)} ${f(r2)} 0 0 0 ${f(b[0] - nx * r2)} ${f(b[1] - ny * r2)}` +
-    `L${f(a[0] - nx * r1)} ${f(a[1] - ny * r1)}` +
-    `A${f(r1)} ${f(r1)} 0 0 0 ${f(a[0] + nx * r1)} ${f(a[1] + ny * r1)}Z`
-  );
-}
-
 function bounds(J) {
   let x0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const [k, pt] of Object.entries(J)) {
-    const r = k === 'H' ? LEN.head : k === 'P' || k === 'M' || k === 'C' ? 0.56 : 0.3;
+    const r = k === 'H' ? LEN.head + HALF : HALF;
     x0 = Math.min(x0, pt[0] - r);
     x1 = Math.max(x1, pt[0] + r);
     y1 = Math.max(y1, pt[1] + r);
@@ -142,54 +113,40 @@ function bounds(J) {
   return { x0, x1, y1 };
 }
 
-// Returns an SVG string for a pose. opts.mirror flips left/right.
+// Returns an SVG string for a pose: a line stick figure with an open round
+// head and tick feet. opts.mirror flips left/right.
 export function poseSVG(p, opts = {}) {
   const J = solve(p);
-  const front = p.v === 'f';
   const { x0, x1, y1 } = bounds(J);
   const w = x1 - x0;
   const hgt = y1;
-  const size = Math.max(w, hgt, 6.2) + 1.0;
+  const size = Math.max(w, hgt, 6.6) + 1.0;
   const ox = (size - w) / 2 - x0;
   const oy = (size + hgt) / 2; // screen y of the ground
   const S = (pt) => [pt[0] + ox, oy - pt[1]];
+  const f = (n) => n.toFixed(2);
+  const line = (...pts) => pts.map((pt, i) => { const q = S(pt); return `${i ? 'L' : 'M'}${f(q[0])} ${f(q[1])}`; }).join('');
 
-  const limbLeg = (sd) =>
-    capsule(S(J['hip' + sd]), S(J['knee' + sd]), R.th0, R.th1) +
-    capsule(S(J['knee' + sd]), S(J['ankle' + sd]), R.th1 - 0.01, R.sh1) +
-    capsule(S(J['ankle' + sd]), S(J['toe' + sd]), R.sh1 - 0.01, R.ft1);
-  const limbArm = (sd) =>
-    capsule(S(J['sh' + sd]), S(J['elbow' + sd]), R.ua0, R.ua1) +
-    capsule(S(J['elbow' + sd]), S(J['hand' + sd]), R.ua1 - 0.01, R.fa1) +
-    capsule(S(J['hand' + sd]), S(J['hand' + sd]), R.hand, R.hand);
-  const torso = () => {
-    let d = capsule(S(J.P), S(J.M), R.hip, R.waist) + capsule(S(J.M), S(J.C), R.waist, R.chest);
-    if (front) d += capsule(S(J.shL), S(J.shR), 0.3, 0.3) + capsule(S(J.hipL), S(J.hipR), 0.42, 0.42);
-    return d;
-  };
-  const head = () => capsule(S(J.H), S(J.H), LEN.head, LEN.head);
-
-  const order = (p.z ?? (front ? 'lL lR t h aL aR' : 'aL lL t h lR aR')).split(' ');
-  const tone = (key) => {
-    if (key === 't' || key === 'h') return 'fb';
-    if (front) return 'fn';
-    return key.endsWith('L') ? 'ff' : 'fn';
-  };
-  let out = '';
-  for (const key of order) {
-    const d = key === 't' ? torso() : key === 'h' ? head() : key[0] === 'l' ? limbLeg(key[1]) : limbArm(key[1]);
-    out += `<path class="fg" d="${d}"/><path class="${tone(key)}" d="${d}"/>`;
+  // spine: a smooth curve from the pelvis through the waist to the neck
+  const P = S(J.P), M = S(J.M), C = S(J.C);
+  const ctrl = [2 * M[0] - (P[0] + C[0]) / 2, 2 * M[1] - (P[1] + C[1]) / 2];
+  let d = `M${f(P[0])} ${f(P[1])}Q${f(ctrl[0])} ${f(ctrl[1])} ${f(C[0])} ${f(C[1])}`;
+  d += line(J.C, J.H) + line(J.hipL, J.hipR);
+  for (const sd of ['L', 'R']) {
+    d += line(J['hip' + sd], J['knee' + sd], J['ankle' + sd], J['toe' + sd]);
+    d += line(J['sh' + sd], J['elbow' + sd], J['hand' + sd]);
   }
+  const H = S(J.H);
   let props = '';
-  if (!p.top) props += `<line class="fl" x1="0.4" y1="${oy.toFixed(2)}" x2="${(size - 0.4).toFixed(2)}" y2="${oy.toFixed(2)}"/>`;
   for (const pr of p.props ?? []) {
     if (pr[0] === 'wall') {
       const x = S(add(J[pr[1]], [pr[2], 0]))[0];
-      props += `<line class="fw" x1="${x.toFixed(2)}" y1="0.3" x2="${x.toFixed(2)}" y2="${oy.toFixed(2)}"/>`;
+      props += `<line class="fw" x1="${f(x)}" y1="0.4" x2="${f(x)}" y2="${f(oy)}"/>`;
     }
   }
-  const flip = opts.mirror ? ` transform="translate(${size.toFixed(2)} 0) scale(-1 1)"` : '';
-  return `<svg class="fig" viewBox="0 0 ${size.toFixed(2)} ${size.toFixed(2)}" aria-hidden="true"><g${flip}>${props}${out}</g></svg>`;
+  const flip = opts.mirror ? ` transform="translate(${f(size)} 0) scale(-1 1)"` : '';
+  return `<svg class="fig" viewBox="0 0 ${f(size)} ${f(size)}" aria-hidden="true"><g${flip} stroke-width="${LINE}">${props}` +
+    `<path class="fk" d="${d}"/><circle class="fh" cx="${f(H[0])}" cy="${f(H[1])}" r="${LEN.head}"/></g></svg>`;
 }
 
 // Plain skeleton as strokes (screen coords, y down) for seeding the recognizer.

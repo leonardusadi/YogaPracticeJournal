@@ -62,12 +62,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; letter-spac
 
 /* figures */
 .fig { display: block; width: 100%; height: 100%; }
-.fg { fill: var(--gap); stroke: var(--gap); stroke-width: 0.15; }
-.fb { fill: var(--fig-body); }
-.fn { fill: var(--fig-near); }
-.ff { fill: var(--fig-far); }
-.fl { stroke: var(--floor); stroke-width: 0.09; stroke-linecap: round; }
-.fw { stroke: var(--floor); stroke-width: 0.16; stroke-linecap: round; }
+.fk { fill: none; stroke: var(--fig-body); stroke-linecap: round; stroke-linejoin: round; }
+.fh { fill: var(--gap); stroke: var(--fig-body); }
+.fw { stroke: var(--floor); stroke-width: 0.2; stroke-linecap: round; }
 .fs { fill: none; stroke: var(--fig-body); stroke-linecap: round; stroke-linejoin: round; }
 
 /* icons & buttons */
@@ -130,7 +127,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; letter-spac
   height: 54px; padding: 0 20px 0 16px; border-radius: 27px; background: var(--accent); color: var(--accent-ink);
   display: flex; align-items: center; gap: 8px; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,.22);
 }
-.empty { text-align: center; color: var(--muted); padding: 48px 24px; }
+.empty { --gap: var(--bg); text-align: center; color: var(--muted); padding: 48px 24px; }
 .empty .fig { width: 150px; height: 150px; margin: 0 auto 8px; opacity: 0.8; }
 .empty h3 { color: var(--ink); font-size: 21px; margin-bottom: 6px; }
 
