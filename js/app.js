@@ -4,7 +4,7 @@ import { toCloud, mirrorCloud, distance, recognize } from './recognizer.js';
 import { createPad } from './pad.js';
 import * as store from './store.js';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const app = document.getElementById('app');
 const layer = document.getElementById('layer');
 
@@ -252,10 +252,17 @@ function viewHome() {
   if (s.sort === 'name') list.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base', numeric: true }));
   else list.sort((a, b) => b.updatedAt - a.updatedAt);
 
+  const width0 = window.innerWidth;
+  const perRow = Math.max(4, Math.floor((width0 - 58 + 2) / 40));
+  const onResize = () => { if (window.innerWidth !== width0) route(); };
+  window.addEventListener('resize', onResize);
+  cleanup = () => window.removeEventListener('resize', onResize);
+
   const sortBtn = (key, label) => h('button', { class: s.sort === key ? 'on' : '', onclick: () => { s.sort = key; store.save(); route(); } }, label);
   const cards = list.map((seq) => {
     const steps = validSteps(seq);
-    const shown = steps.slice(0, 6);
+    // preview: up to two rows of figures, the last cell becoming "+N" when there are more
+    const shown = steps.length <= perRow * 2 ? steps : steps.slice(0, perRow * 2 - 1);
     return h('div', { class: 'card', onclick: () => go(`#/s/${seq.id}`) },
       h('div', { class: 'row' },
         h('div', { class: 'grow' },

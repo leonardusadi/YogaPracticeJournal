@@ -4,7 +4,7 @@ Scribble a stick figure, pick the asana it matches, and string asanas into a
 sequence you can replay for home practice. It works like the handwriting
 keyboard for Japanese: draw in the box, tap a candidate, and it joins the line.
 
-- 80 built-in Iyengar asanas, each with a stick-figure drawing and its Sanskrit name
+- 89 built-in asanas, each with a stick-figure drawing and its Sanskrit name
 - Teach the app your own scribble for any asana; add your own asanas
 - Sequences: new, rename, duplicate, delete, reorder, sorted by name or last edit
 - Three ways to replay: whole sequence on one page with arrows, step by step,
