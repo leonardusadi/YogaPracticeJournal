@@ -4,7 +4,7 @@ Scribble a stick figure, pick the asana it matches, and string asanas into a
 sequence you can replay for home practice. It works like the handwriting
 keyboard for Japanese: draw in the box, tap a candidate, and it joins the line.
 
-- 106 built-in asanas, including wall, chair and rope versions, each with a stick-figure drawing and its Sanskrit name
+- 107 built-in asanas, including wall, chair and rope versions, each with a stick-figure drawing and its Sanskrit name
 - Teach the app your own scribble for any asana; add your own asanas
 - Sequences: new, rename, duplicate, delete, reorder, sorted by name or last edit
 - A journal: notes tagged with asanas (shown as their stick figures) and your own

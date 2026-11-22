@@ -169,7 +169,7 @@ export function poseSVG(p, opts = {}) {
   const P = S(J.P), M = S(J.M), C = S(J.C);
   const ctrl = [2 * M[0] - (P[0] + C[0]) / 2, 2 * M[1] - (P[1] + C[1]) / 2];
   let d = `M${f(P[0])} ${f(P[1])}Q${f(ctrl[0])} ${f(ctrl[1])} ${f(C[0])} ${f(C[1])}`;
-  d += line(J.C, J.H) + line(J.hipL, J.hipR);
+  d += line(J.C, J.H) + line(J.hipL, J.hipR) + line(J.shL, J.shR);
   for (const sd of ['L', 'R']) {
     d += line(J['hip' + sd], J['knee' + sd], J['ankle' + sd], J['toe' + sd]);
     d += line(J['sh' + sd], J['elbow' + sd], J['hand' + sd]);

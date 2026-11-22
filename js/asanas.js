@@ -234,6 +234,9 @@ const A = [
     { s: [178, 216], h: [238, 0.9], l: [-10, -54, 0], a: [[222, 0.7], [192, 0.7]], props: [['chair', 'P', -0.75, 1]] }],
   ['salamba_sarvangasana_chair', 'Salamba Sarvangasana (chair)', 'Chair shoulderstand', 'props', 0,
     { s: [215, 255], h: [168, 1], l: [80, 80, [170, 0.6]], a: [[12, 0.85], [4, 0.85]], n: 90, props: [['chair', 'P', 0.95, 1], ['box', 'C', -1.3, 2.0, 'under']] }],
+  ['salamba_sarvangasana_two_chairs', 'Salamba Sarvangasana (two chairs)', 'Shoulder stand on two chairs, shoulders on the seats, head hanging free between them', 'props', 0,
+    { v: 'f', sw: 1.1, s: [-90, -90], h: -90, lL: [104, 100, [100, 0.3]], lR: [76, 80, [80, 0.3]], aL: [[-8, 0.55], [8, 0.5]], aR: [[188, 0.55], [172, 0.5]], lift: 0.55,
+      props: [['chair', 'C', -2.1, -1], ['chair', 'C', 2.1, 1]] }],
   ['ardha_halasana_chair', 'Ardha Halasana (chair)', 'Half plough, legs resting on a chair', 'props', 0,
     { s: [-82, -90], h: 180, l: [-170, -170, [-90, 0.5]], a: [0, 0], props: [['chair', 'ankleR', 0.75, -1]] }],
   ['bharadvajasana_chair', 'Bharadvajasana (chair)', 'Seated twist on a chair', 'props', 1,
@@ -283,6 +286,12 @@ export const SKETCH_SEEDS = {
   ],
   utkatasana_ropes: [
     [[[292, 718], [298, 890]], circle(295, 805, 18), [[298, 885], [178, 885], [200, 985]], [[200, 988], [172, 990]]],
+  ],
+  salamba_sarvangasana_two_chairs: [
+    [[[112, 200], [108, 350]], [[112, 275], [195, 280]], [[178, 285], [170, 355]],
+      [[330, 208], [322, 360]], [[245, 278], [325, 282]], [[245, 283], [245, 358]],
+      [[200, 105], [205, 150], [228, 200]], [[246, 95], [245, 160], [228, 200]], [[228, 200], [212, 268]], circle(205, 285, 15),
+      [[215, 235], [145, 285]], [[240, 225], [268, 232], [300, 275]]],
   ],
   upavistha_konasana: [
     [circle(378, 133, 38), [[337, 160], [218, 340]], [[323, 205], [357, 387]], [[240, 320], [467, 230]], [[205, 335], [405, 537]]],
