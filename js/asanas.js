@@ -219,7 +219,7 @@ const A = [
     { s: [180, 180], h: [146, 1], lL: [0, 0, 30], lR: [108, 108, 200], aR: { to: 'toeR', fit: 1 }, aL: [[180, 0.6], [86, 0.5]], n: 'c' }],
   // ---- wall, chair & ropes ----
   ['uttanasana_wall', 'Uttanasana (wall)', 'Forward bend, buttocks on the wall', 'props', 0,
-    { s: [-58, -84], h: -94, l: [-76, -76, 0], a: { to: 'floor', dx: -0.2, fit: 1 }, props: [['wall', 'P', -0.4]] }],
+    { s: [-28, -34], h: -42, l: [-62, -62, 0], a: { to: 'floor', dx: -0.25, fit: 1 }, props: [['wall', 'P', -0.4]] }],
   ['ardha_uttanasana_wall', 'Ardha Uttanasana (wall)', 'Right angle, hands on the wall', 'props', 0,
     { s: [0, 0], h: -8, a: [0, 0], props: [['wall', 'handR', 0.2]] }],
   ['adho_mukha_svanasana_wall', 'Adho Mukha Svanasana (wall)', 'Downward dog, heels at the wall', 'props', 0,
@@ -228,6 +228,8 @@ const A = [
     { s: [-90, -90], h: -90, l: [90, 90, [0, 0.7]], a: [-90, -90], n: 0, props: [['wall', 'P', -0.4]] }],
   ['salamba_sirsasana_wall', 'Salamba Sirsasana (wall)', 'Headstand at the wall', 'props', 0,
     { s: [-90, -90], h: -90, l: [90, 90, [0, 0.7]], a: [[-72, 1], [180, 0.3]], n: 0, props: [['wall', 'P', -0.4]] }],
+  ['adho_mukha_svanasana_chair', 'Adho Mukha Svanasana (chair)', 'Downward dog, hands on a chair', 'props', 0,
+    { s: [-14.5, -14.5], h: -28, l: [-120, -120, 0], a: [-14.5, -14.5], props: [['chair', 'handR', 0.85, 1]] }],
   ['viparita_dandasana_chair', 'Viparita Dandasana (chair)', 'Backbend over a chair', 'props', 0,
     { s: [178, 216], h: [238, 0.9], l: [-10, -54, 0], a: [[222, 0.7], [192, 0.7]], props: [['chair', 'P', -0.75, 1]] }],
   ['salamba_sarvangasana_chair', 'Salamba Sarvangasana (chair)', 'Chair shoulderstand', 'props', 0,
@@ -246,6 +248,8 @@ const A = [
     { s: [-66, -88], h: -96, l: [-104, -104, 0], a: { to: 'floor', dx: 0.2, fit: 1 }, props: [['wall', 'ankleR', -0.4], ['rope', ['m', 'ankleR', -0.4, 'P', 0.3], ['P', 0, 0]]] }],
   ['urdhva_mukha_svanasana_ropes', 'Urdhva Mukha Svanasana (ropes)', 'Upward dog holding the wall ropes', 'props', 0,
     { s: [62, 84], h: 102, l: [-118, -118, [180, 0.7]], a: [168, 168], props: [['wall', 'ankleR', -0.5], ['rope', ['m', 'ankleR', -0.5, 'handR', 0.9], ['handR', 0, 0]]] }],
+  ['utkatasana_ropes', 'Utkatasana (ropes)', 'Hanging from the upper ropes, hips and knees bent', 'props', 0,
+    { a: [90, 90], l: [0, -90, 0], props: [['rope', ['handR', 0, 0], ['handR', 0, 1.7]]] }],
   ['rope_sirsasana', 'Rope Sirsasana', 'Hanging upside down in the ropes', 'props', 0,
     { s: [-90, -90], h: -90, l: [90, 90, [0, 0.6]], a: [[-90, 0.6], [-90, 0.55]], n: 180, lift: 0.55, props: [['wall', 'P', 0.7], ['rope', ['m', 'P', 0.7, 'P', 0.9], ['P', 0, 0]]] }],
 ];
@@ -260,6 +264,8 @@ export const SKETCH_SEEDS = {
     [[[1008, 320], [1115, 128], [1265, 310]], circle(1058, 220, 28)],
   ],
   uttanasana_wall: [
+    [[[205, 165], [200, 420]], [[215, 165], [140, 240]], [[200, 215], [135, 295]], [[205, 280], [140, 360]], [[210, 365], [170, 435]],
+      [[215, 280], [315, 318]], circle(332, 320, 22), [[215, 280], [285, 420]], [[300, 335], [290, 420]], [[290, 425], [325, 428]]],
     [[[135, 238], [113, 470]], [[25, 330], [128, 255]], [[22, 400], [118, 322]], [[18, 438], [112, 366]],
       [[145, 388], [318, 272]], circle(328, 280, 28), [[268, 330], [268, 468]], [[145, 388], [290, 542]]],
     [[[527, 268], [508, 538]], [[472, 356], [534, 294]], [[476, 426], [532, 368]],
@@ -267,6 +273,16 @@ export const SKETCH_SEEDS = {
   ],
   uttanasana: [
     [[[905, 377], [1060, 228]], circle(1083, 240, 32), [[1002, 298], [985, 512]], [[905, 377], [1028, 618]]],
+  ],
+  adho_mukha_svanasana_chair: [
+    [[[525, 340], [630, 240], [700, 275], [755, 300]], circle(705, 270, 12), [[745, 320], [790, 320]], [[745, 320], [745, 362]], [[792, 235], [795, 365]]],
+  ],
+  viparita_dandasana_chair: [
+    [circle(980, 330, 15), [[940, 358], [980, 335]], [[985, 320], [1040, 298], [1120, 295], [1195, 340]], [[1195, 345], [1212, 322]],
+      [[1090, 225], [1092, 378]], [[1012, 310], [1012, 372]], [[1012, 310], [1090, 305]]],
+  ],
+  utkatasana_ropes: [
+    [[[292, 718], [298, 890]], circle(295, 805, 18), [[298, 885], [178, 885], [200, 985]], [[200, 988], [172, 990]]],
   ],
   upavistha_konasana: [
     [circle(378, 133, 38), [[337, 160], [218, 340]], [[323, 205], [357, 387]], [[240, 320], [467, 230]], [[205, 335], [405, 537]]],

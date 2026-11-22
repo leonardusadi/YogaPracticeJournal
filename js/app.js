@@ -4,7 +4,7 @@ import { toCloud, mirrorCloud, distance, recognize } from './recognizer.js';
 import { createPad } from './pad.js';
 import * as store from './store.js';
 
-const VERSION = '1.5.0';
+const VERSION = '1.5.1';
 const app = document.getElementById('app');
 const layer = document.getElementById('layer');
 
