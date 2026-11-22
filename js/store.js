@@ -9,6 +9,7 @@ const blank = () => ({
   samples: {},      // asanaId -> [strokes, ...]
   custom: [],       // [{ id, name, strokes }]
   names: {},        // asanaId -> renamed title
+  journal: [],      // [{ id, date, text, asanas: [asanaId], tags: [word], createdAt, updatedAt }]
   settings: { sort: 'edited', hold: 30, learn: true, sound: true },
 });
 
@@ -68,6 +69,32 @@ export function duplicateSequence(id) {
 }
 export const newStep = (asana) => ({ id: uid(), asana, hold: null, side: 'both', note: '' });
 
+// ---- journal ----
+const today = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+// Words written as #word in a note are its hashtags.
+export function parseTags(text) {
+  const tags = new Set();
+  for (const m of text.matchAll(/(^|[^\p{L}\p{N}_#])#([\p{L}\p{N}_-]{1,40})/gu)) tags.add(m[2].toLowerCase());
+  return [...tags];
+}
+export function newEntry(pre = {}) {
+  const now = Date.now();
+  const entry = { id: uid(), date: today(), text: '', asanas: [], tags: [], createdAt: now, updatedAt: now, ...pre };
+  data.journal.push(entry);
+  save();
+  return entry;
+}
+export const getEntry = (id) => data.journal.find((e) => e.id === id);
+export function touchEntry(entry) {
+  entry.tags = parseTags(entry.text);
+  entry.updatedAt = Date.now();
+  save();
+}
+export function deleteEntry(id) { data.journal = data.journal.filter((e) => e.id !== id); save(); }
+
 // ---- scribble samples ----
 const round = (strokes) => {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
@@ -126,6 +153,8 @@ export function importJSON(text, mode) {
     for (const s of incoming.sequences) if (!have.has(s.id)) data.sequences.push(s);
     const haveC = new Set(data.custom.map((c) => c.id));
     for (const c of incoming.custom ?? []) if (!haveC.has(c.id)) data.custom.push(c);
+    const haveJ = new Set(data.journal.map((e) => e.id));
+    for (const e of incoming.journal ?? []) if (!haveJ.has(e.id)) data.journal.push(e);
     for (const [id, list] of Object.entries(incoming.samples ?? {})) {
       const mine = (data.samples[id] ??= []);
       const seen = new Set(mine.map((m) => JSON.stringify(m)));

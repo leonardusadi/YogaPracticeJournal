@@ -4,7 +4,7 @@ import { toCloud, mirrorCloud, distance, recognize } from './recognizer.js';
 import { createPad } from './pad.js';
 import * as store from './store.js';
 
-const VERSION = '1.3.0';
+const VERSION = '1.4.0';
 const app = document.getElementById('app');
 const layer = document.getElementById('layer');
 
@@ -51,6 +51,7 @@ const ICON = {
   right: svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
   insert: svg('<path d="M12 8v8M8 12h8"/><rect x="3.5" y="3.5" width="17" height="17" rx="4"/>'),
   restart: svg('<path d="M5 12a7 7 0 1 0 2.2-5.1"/><path d="M5 4v4h4"/>'),
+  note: svg('<path d="M6 3h9l4 4v14H6z"/><path d="M9 8h4M9 12h7M9 16h7"/>'),
 };
 const icon = (name) => h('span', { class: 'ic', html: ICON[name] });
 const iconBtn = (name, label, onclick, cls = '') => h('button', { class: 'iconbtn ' + cls, 'aria-label': label, onclick }, icon(name));
@@ -189,11 +190,14 @@ function route() {
   layer.replaceChildren();
   const [, view = '', id, extra] = location.hash.split('/');
   const seq = id ? store.getSequence(id) : null;
+  const entry = view === 'j' && id ? store.getEntry(id) : null;
   app.replaceChildren();
   if (view === 's' && seq) viewSequence(seq);
   else if (view === 'e' && seq) viewEdit(seq);
   else if (view === 'p' && seq) viewPlay(seq, extra === 'timed');
   else if (view === 'asanas') viewAsanas();
+  else if (view === 'j' && entry) viewNote(entry);
+  else if (view === 'journal' || view === 'j') viewJournal();
   else if (view === 'settings') viewSettings();
   else viewHome();
 }
@@ -203,6 +207,7 @@ function tabs(active) {
   const tab = (key, hash, ic, label) => h('button', { class: active === key ? 'on' : '', onclick: () => go(hash) }, icon(ic), label);
   return h('nav', { class: 'tabs' },
     tab('home', '#/', 'list', 'Sequences'),
+    tab('journal', '#/journal', 'note', 'Journal'),
     tab('asanas', '#/asanas', 'book', 'Asanas'),
     tab('settings', '#/settings', 'gear', 'Settings'));
 }
@@ -409,6 +414,11 @@ function asanaSheet(a, onChange) {
       toast('Scribble saved');
     } }, 'Save scribble');
     const title = h('h3', {}, nameOf(a));
+    const notes = entriesFor(a.id);
+    const noteList = h('div', { class: 'nlist' },
+      notes.map((e) => h('button', { class: 'nrow', onclick: () => { s.close(); go(`#/j/${e.id}`); } },
+        h('b', {}, fmtDay(e.date)), h('span', {}, e.text.trim() || 'No text'))),
+      h('button', { class: 'btn small', style: { alignSelf: 'flex-start' }, onclick: () => { const e = store.newEntry({ asanas: [a.id] }); s.close(); go(`#/j/${e.id}`); } }, icon('plus'), 'Write a note'));
     s.body.append(
       h('div', { class: 'hero' }, figBox(a), h('div', { class: 'grow' }, title, h('div', { class: 'muted' }, a.en),
         a.sided ? h('div', { class: 'muted small' }, 'Practised on both sides') : null)),
@@ -430,6 +440,7 @@ function asanaSheet(a, onChange) {
           s.close();
           onChange?.();
         } }, icon('trash'), 'Delete') : null),
+      h('div', { class: 'field' }, h('label', {}, notes.length ? `Journal notes (${notes.length})` : 'Journal notes'), noteList),
       h('div', { class: 'field' }, h('label', {}, 'My scribbles for this asana'), samplesBox),
       h('div', { class: 'field' }, h('label', {}, 'Teach a new scribble'), pb.wrap),
       h('div', { class: 'row', style: { marginTop: '10px', justifyContent: 'flex-end' } }, saveBtn));
@@ -459,6 +470,164 @@ function customAsanaSheet(onDone, initial) {
     pb.init(check);
     s.onClose = () => pb.pad.destroy();
   }, { title: 'My own asana' });
+}
+
+
+// ---------------------------------------------------------------- journal
+const jFilter = { tag: null, q: '' };
+const HASH_RE = /(^|[^\p{L}\p{N}_#])#([\p{L}\p{N}_-]{1,40})/gu;
+
+function fmtDay(date) {
+  const d = new Date(date + 'T12:00:00');
+  if (isNaN(d)) return date;
+  const opts = { weekday: 'short', day: 'numeric', month: 'short' };
+  if (d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric';
+  return d.toLocaleDateString([], opts);
+}
+// Note text with its #hashtags turned into tappable links.
+function richText(text, onTag) {
+  const out = [];
+  let last = 0;
+  for (const m of text.matchAll(HASH_RE)) {
+    const start = m.index + m[1].length;
+    if (start > last) out.push(text.slice(last, start));
+    const tag = m[2].toLowerCase();
+    out.push(h('span', { class: 'hash', onclick: (e) => { e.stopPropagation(); onTag(tag); } }, '#' + m[2]));
+    last = start + 1 + m[2].length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+const entriesFor = (asanaId) => store.db().journal.filter((e) => e.asanas.includes(asanaId))
+  .sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt);
+
+function viewJournal() {
+  const all = [...store.db().journal].sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt);
+  const list = h('div', { class: 'cards' });
+  const chips = h('div', { class: 'chips' });
+  const input = h('input', { type: 'search', placeholder: 'Search notes', value: jFilter.q, autocapitalize: 'off', autocomplete: 'off',
+    oninput: () => { jFilter.q = input.value.trim().toLowerCase(); draw(); } });
+
+  function draw() {
+    const counts = new Map();
+    for (const e of all) for (const t of e.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+    if (jFilter.tag && !counts.has(jFilter.tag)) jFilter.tag = null;
+    const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    chips.replaceChildren(...(tags.length ? [h('button', { class: 'chip' + (jFilter.tag ? '' : ' on'), onclick: () => { jFilter.tag = null; draw(); } }, 'All'),
+      ...tags.map(([t, n]) => h('button', { class: 'chip' + (jFilter.tag === t ? ' on' : ''), onclick: () => { jFilter.tag = jFilter.tag === t ? null : t; draw(); } }, `#${t} ${n}`))] : []));
+    chips.hidden = !tags.length;
+    const shown = all.filter((e) => (!jFilter.tag || e.tags.includes(jFilter.tag)) &&
+      (!jFilter.q || e.text.toLowerCase().includes(jFilter.q) || e.asanas.some((id) => { const a = asana(id); return a && nameOf(a).toLowerCase().includes(jFilter.q); })));
+    list.replaceChildren(...shown.map((e) => {
+      const figs = e.asanas.map(asana).filter(Boolean);
+      return h('div', { class: 'card jcard', onclick: () => go(`#/j/${e.id}`) },
+        h('div', { class: 'jdate' }, fmtDay(e.date)),
+        e.text.trim() ? h('div', { class: 'jtext' }, richText(e.text.trim(), (t) => { jFilter.tag = t; draw(); })) : null,
+        figs.length ? h('div', { class: 'jfigs' }, figs.map((a) =>
+          h('button', { class: 'jfig', 'aria-label': nameOf(a), html: figure(a), onclick: (ev) => { ev.stopPropagation(); asanaSheet(a, route); } }))) : null);
+    }));
+    if (!shown.length) list.append(h('div', { class: 'empty' }, all.length ? 'No notes match.' : [
+      h('h3', {}, 'No notes yet'),
+      h('div', {}, 'Write what you noticed in practice. Tag asanas with a scribble, and add your own #hashtags in the text.')]));
+  }
+  draw();
+
+  app.append(h('div', { class: 'view', style: { position: 'relative' } },
+    h('header', { class: 'top big' }, h('h1', { class: 'grow' }, 'Journal')),
+    all.length ? h('div', { class: 'search' }, icon('search'), input) : null,
+    chips,
+    h('div', { class: 'scroll' }, list),
+    h('button', { class: 'fab', onclick: () => go(`#/j/${store.newEntry().id}`) }, icon('plus'), 'New note'),
+    tabs('journal')));
+}
+
+// Pick an asana by scribbling it (or browsing), used to tag journal notes.
+function scribblePicker(onPick) {
+  openSheet((s) => {
+    s.body.classList.add('flush');
+    const settings = store.db().settings;
+    const cands = h('div', { class: 'cands' });
+    const canvas = h('canvas', { class: 'pad short' });
+    let pad;
+    let results = [];
+    const choose = (a, rank) => {
+      if (settings.learn && !pad.isEmpty() && rank !== 0) { store.addSample(a.id, pad.strokes); rebuildTemplates(); }
+      s.close();
+      onPick(a);
+    };
+    const draw = () => {
+      cands.replaceChildren();
+      if (pad.isEmpty()) { cands.append(h('div', { class: 'hint' }, 'Draw the asana below, or browse')); return; }
+      results.forEach((r, i) => {
+        const a = asana(r.id);
+        if (a) cands.append(h('button', { class: 'cand', onclick: () => choose(a, i) }, figBox(a), h('div', { class: 'nm' }, nameOf(a))));
+      });
+    };
+    const browse = () => {
+      const strokes = pad.strokes.map((st) => st.map((p) => [...p]));
+      s.close();
+      openSheet((b) => {
+        b.body.classList.add('flush');
+        asanaBrowser(b.body, (a) => {
+          if (settings.learn && strokes.length) { store.addSample(a.id, strokes); rebuildTemplates(); }
+          b.close();
+          onPick(a);
+        });
+      }, { full: true, title: 'Choose an asana' });
+    };
+    s.body.append(cands, h('div', { class: 'padwrap', style: { paddingTop: '8px' } }, canvas,
+      h('div', { class: 'padtools left', style: { top: '14px' } }, h('button', { class: 'lbl', onclick: browse }, icon('search'), 'Browse')),
+      h('div', { class: 'padtools', style: { top: '14px' } }, iconBtn('undo', 'Undo stroke', () => pad.undo()), iconBtn('x', 'Clear drawing', () => pad.clear()))));
+    pad = createPad(canvas, (strokes) => { results = strokes.length ? recognize(strokes, templates, 10) : []; draw(); });
+    draw();
+    s.onClose = () => pad.destroy();
+  }, { title: 'Tag an asana' });
+}
+
+function viewNote(entry) {
+  const changed = () => store.touchEntry(entry);
+  const text = h('textarea', { class: 'jarea', placeholder: 'What did you notice today?\nWrite #words for your own tags, like #shoulders or #morning.', 'aria-label': 'Note' });
+  text.value = entry.text;
+  const grow = () => { text.style.height = 'auto'; text.style.height = Math.max(180, text.scrollHeight + 2) + 'px'; };
+  const tagBox = h('div', { class: 'chips', style: { padding: '0', flexWrap: 'wrap' } });
+  const drawTags = () => tagBox.replaceChildren(...(entry.tags.length
+    ? entry.tags.map((t) => h('button', { class: 'chip', onclick: () => { jFilter.tag = t; jFilter.q = ''; go('#/journal'); } }, '#' + t))
+    : [h('div', { class: 'muted small' }, 'None yet. Any #word you type in the note becomes a tag.')]));
+  text.addEventListener('input', () => { entry.text = text.value; changed(); grow(); drawTags(); });
+
+  const date = h('input', { type: 'date', value: entry.date, 'aria-label': 'Date', onchange: () => { if (date.value) { entry.date = date.value; changed(); } } });
+  const figs = h('div', { class: 'samples' });
+  const drawFigs = () => {
+    const valid = entry.asanas.filter((id) => asana(id));
+    figs.replaceChildren(...valid.map((id) => {
+      const a = asana(id);
+      return h('div', { class: 'sample', role: 'button', 'aria-label': nameOf(a), html: figure(a), onclick: () => asanaSheet(a, drawFigs) },
+        h('button', { 'aria-label': 'Remove ' + nameOf(a), html: ICON.x, onclick: (e) => { e.stopPropagation(); entry.asanas = entry.asanas.filter((x) => x !== id); changed(); drawFigs(); } }));
+    }), h('button', { class: 'sample add', 'aria-label': 'Tag an asana', html: ICON.plus, onclick: () => scribblePicker(addAsana) }));
+  };
+  const addAsana = (a) => {
+    if (!entry.asanas.includes(a.id)) { entry.asanas.push(a.id); changed(); }
+    drawFigs();
+  };
+
+  app.append(h('div', { class: 'view' },
+    h('header', { class: 'top' },
+      iconBtn('back', 'Back to journal', () => go('#/journal')),
+      h('h2', { class: 'grow' }, 'Note'),
+      iconBtn('trash', 'Delete note', async () => {
+        if (!await dialog({ title: 'Delete this note?', ok: 'Delete', danger: true })) return;
+        store.deleteEntry(entry.id);
+        go('#/journal');
+      })),
+    h('div', { class: 'scroll jedit' },
+      date,
+      text,
+      h('div', { class: 'field' }, h('label', {}, 'Asanas in this note'), figs),
+      h('div', { class: 'field' }, h('label', {}, 'My hashtags'), tagBox))));
+  drawFigs();
+  drawTags();
+  grow();
+  cleanup = () => { if (!entry.text.trim() && !entry.asanas.length) store.deleteEntry(entry.id); };
 }
 
 // ---------------------------------------------------------------- composer
@@ -894,13 +1063,13 @@ function viewSettings() {
         item('Bell', 'Chime when the asana changes in timed practice', sw('sound')),
         item('Learn from my picks', 'When you choose an asana that was not the first match, remember that scribble', sw('learn'))),
       h('div', { class: 'group' },
-        item('Export backup', 'Save all sequences and scribbles to a file', h('button', { class: 'btn small', onclick: exportBackup }, icon('up'), 'Export')),
+        item('Export backup', 'Save all sequences, notes and scribbles to a file', h('button', { class: 'btn small', onclick: exportBackup }, icon('up'), 'Export')),
         item('Import backup', 'Restore from a file you exported', h('button', { class: 'btn small', onclick: importBackup }, icon('down'), 'Import')),
         item('Forget my scribbles', `${sampleCount} saved scribble${sampleCount === 1 ? '' : 's'}`, h('button', { class: 'btn small danger', disabled: !sampleCount, onclick: async () => {
           if (!await dialog({ title: 'Forget all scribbles?', text: 'Sequences and your own asanas are kept. Matching goes back to the built-in outlines.', ok: 'Forget', danger: true })) return;
           d.samples = {}; store.save(); rebuildTemplates(); route();
         } }, 'Forget'))),
-      h('div', { class: 'note' }, 'Your sequences and scribbles are stored only on this device. Nothing is uploaded. Deleting the app from the Home Screen or clearing website data erases them, so export a backup now and then.'),
+      h('div', { class: 'note' }, 'Your sequences, journal notes and scribbles are stored only on this device. Nothing is uploaded. Deleting the app from the Home Screen or clearing website data erases them, so export a backup now and then.'),
       h('div', { class: 'note' }, `Yoga Practice Journal ${VERSION} · ${ASANAS.length} asanas · works offline once installed.`)),
     tabs('settings')));
 }

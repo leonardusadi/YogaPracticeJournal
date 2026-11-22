@@ -7,6 +7,8 @@ keyboard for Japanese: draw in the box, tap a candidate, and it joins the line.
 - 89 built-in asanas, each with a stick-figure drawing and its Sanskrit name
 - Teach the app your own scribble for any asana; add your own asanas
 - Sequences: new, rename, duplicate, delete, reorder, sorted by name or last edit
+- A journal: notes tagged with asanas (shown as their stick figures) and your own
+  #hashtags; each asana's page lists the notes that mention it
 - Three ways to replay: whole sequence on one page with arrows, step by step,
   or timed with a bell
 - Runs offline once installed; all data stays on the phone
@@ -25,7 +27,7 @@ keyboard for Japanese: draw in the box, tap a candidate, and it joins the line.
 
 ## Your data
 
-Sequences and scribbles are saved in the app's storage on the phone only.
+Sequences, journal notes and scribbles are saved in the app's storage on the phone only.
 Nothing is uploaded. Removing the Home Screen app or clearing Safari's website
 data erases them, so use **Settings → Export backup** now and then. The backup
 is a single file you can import again on any phone.
@@ -38,6 +40,9 @@ is a single file you can import again on any phone.
   scribble for next time.
 - Tap an asana in the sequence to set a hold time, sides, a note for props, or
   to move, duplicate or remove it. Press and hold, then drag, to reorder.
+- **Journal** – tap *New note* and write. Tap **+** under the note to tag an asana by
+  scribbling it; any #word in the text becomes a hashtag. Tap a stick figure on a
+  note to open that asana, where all its notes are listed.
 - **Asanas** – browse the library, rename an asana, and draw sample scribbles
   for it. *My own* adds an asana that is not in the library.
 - **Practice** – open a sequence to see it on one page. *Practice* steps
