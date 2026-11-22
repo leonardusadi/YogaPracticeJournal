@@ -64,6 +64,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; letter-spac
 .fig { display: block; width: 100%; height: 100%; }
 .fk { fill: none; stroke: var(--fig-body); stroke-linecap: round; stroke-linejoin: round; }
 .fh { fill: var(--gap); stroke: var(--fig-body); }
+.fd { fill: var(--fig-body); stroke: none; }
 .fw { stroke: var(--floor); stroke-width: 0.2; stroke-linecap: round; }
 .fs { fill: none; stroke: var(--fig-body); stroke-linecap: round; stroke-linejoin: round; }
 

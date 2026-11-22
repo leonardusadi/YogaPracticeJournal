@@ -7,6 +7,7 @@
 const LEN = { s1: 1.45, s2: 1.45, neck: 1.15, head: 0.85, ua: 1.95, fa: 2.05, th: 2.35, sh: 2.25, ft: 0.8 };
 const LINE = 0.26; // stroke width, in figure units
 const HALF = LINE / 2;
+const NOSE = 0.38; // length of the nose tick
 
 const rad = (d) => (d * Math.PI) / 180;
 const vec = (deg, len = 1) => [Math.cos(rad(deg)) * len, Math.sin(rad(deg)) * len];
@@ -105,7 +106,7 @@ export function solve(p) {
 function bounds(J) {
   let x0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const [k, pt] of Object.entries(J)) {
-    const r = k === 'H' ? LEN.head + HALF : HALF;
+    const r = k === 'H' ? LEN.head + HALF + NOSE : HALF;
     x0 = Math.min(x0, pt[0] - r);
     x1 = Math.max(x1, pt[0] + r);
     y1 = Math.max(y1, pt[1] + r);
@@ -137,6 +138,14 @@ export function poseSVG(p, opts = {}) {
     d += line(J['sh' + sd], J['elbow' + sd], J['hand' + sd]);
   }
   const H = S(J.H);
+  // nose: shows which way the figure faces. Side views face along the body's
+  // front; front and top views face the viewer (a dot) unless the pose says
+  // where the head is turned (p.n = angle, or null for a hidden face).
+  const headAngle = seg(p.h ?? seg((p.s ?? [90, 90])[1])[0])[0];
+  const facing = p.n !== undefined ? p.n : p.v === 'f' ? 'c' : headAngle - 90;
+  let nose = '';
+  if (facing === 'c') nose = `<circle class="fd" cx="${f(H[0])}" cy="${f(H[1])}" r="0.17"/>`;
+  else if (facing !== null) nose = `<path class="fk" d="${line(add(J.H, vec(facing, LEN.head)), add(J.H, vec(facing, LEN.head + NOSE)))}"/>`;
   let props = '';
   for (const pr of p.props ?? []) {
     if (pr[0] === 'wall') {
@@ -146,7 +155,7 @@ export function poseSVG(p, opts = {}) {
   }
   const flip = opts.mirror ? ` transform="translate(${f(size)} 0) scale(-1 1)"` : '';
   return `<svg class="fig" viewBox="0 0 ${f(size)} ${f(size)}" aria-hidden="true"><g${flip} stroke-width="${LINE}">${props}` +
-    `<path class="fk" d="${d}"/><circle class="fh" cx="${f(H[0])}" cy="${f(H[1])}" r="${LEN.head}"/></g></svg>`;
+    `<path class="fk" d="${d}"/><circle class="fh" cx="${f(H[0])}" cy="${f(H[1])}" r="${LEN.head}"/>${nose}</g></svg>`;
 }
 
 // Plain skeleton as strokes (screen coords, y down) for seeding the recognizer.
