@@ -1,6 +1,6 @@
 // Offline support: every file the app needs is stored on the device at
 // install time. Bump VERSION whenever the app's files change.
-const VERSION = 'ypj-1.4.0';
+const VERSION = 'ypj-1.5.0';
 const FILES = [
   './',
   'index.html',

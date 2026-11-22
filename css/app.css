@@ -12,6 +12,7 @@
   --fig-near: #4d4b58;
   --fig-far: #a8a4ae;
   --floor: #cfc5b3;
+  --prop: #a8977c;
   --gap: var(--card);
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
@@ -34,6 +35,7 @@
     --fig-near: #cdc8bb;
     --fig-far: #716d79;
     --floor: #4a4651;
+    --prop: #857c8f;
   }
 }
 
@@ -65,7 +67,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; letter-spac
 .fk { fill: none; stroke: var(--fig-body); stroke-linecap: round; stroke-linejoin: round; }
 .fh { fill: var(--gap); stroke: var(--fig-body); }
 .fd { fill: var(--fig-body); stroke: none; }
-.fw { stroke: var(--floor); stroke-width: 0.2; stroke-linecap: round; }
+.fw { fill: none; stroke: var(--prop); stroke-width: 0.22; stroke-linecap: round; }
+.fp { fill: none; stroke: var(--prop); stroke-width: 0.2; stroke-linecap: round; stroke-linejoin: round; }
+.fr { fill: none; stroke: var(--prop); stroke-width: 0.13; stroke-linecap: round; }
 .fs { fill: none; stroke: var(--fig-body); stroke-linecap: round; stroke-linejoin: round; }
 
 /* icons & buttons */

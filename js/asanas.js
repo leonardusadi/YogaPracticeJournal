@@ -10,6 +10,7 @@ export const CATEGORIES = [
   ['backbend', 'Backbends'],
   ['inversion', 'Inversions'],
   ['supine', 'Supine & restorative'],
+  ['props', 'Wall, chair & ropes'],
   ['custom', 'My asanas'],
 ];
 
@@ -216,6 +217,37 @@ const A = [
     { s: [180, 180], h: 180, l: [90, 90, 180], a: [178, 180] }],
   ['anantasana', 'Anantasana', 'Side-reclining leg lift', 'supine', 1,
     { s: [180, 180], h: [146, 1], lL: [0, 0, 30], lR: [108, 108, 200], aR: { to: 'toeR', fit: 1 }, aL: [[180, 0.6], [86, 0.5]], n: 'c' }],
+  // ---- wall, chair & ropes ----
+  ['uttanasana_wall', 'Uttanasana (wall)', 'Forward bend, buttocks on the wall', 'props', 0,
+    { s: [-58, -84], h: -94, l: [-76, -76, 0], a: { to: 'floor', dx: -0.2, fit: 1 }, props: [['wall', 'P', -0.4]] }],
+  ['ardha_uttanasana_wall', 'Ardha Uttanasana (wall)', 'Right angle, hands on the wall', 'props', 0,
+    { s: [0, 0], h: -8, a: [0, 0], props: [['wall', 'handR', 0.2]] }],
+  ['adho_mukha_svanasana_wall', 'Adho Mukha Svanasana (wall)', 'Downward dog, heels at the wall', 'props', 0,
+    { s: [-38, -36], h: -50, l: [-120, -120, 0], a: [-34, -34], props: [['wall', 'ankleR', -0.4]] }],
+  ['adho_mukha_vrksasana_wall', 'Adho Mukha Vrksasana (wall)', 'Handstand at the wall', 'props', 0,
+    { s: [-90, -90], h: -90, l: [90, 90, [0, 0.7]], a: [-90, -90], n: 0, props: [['wall', 'P', -0.4]] }],
+  ['salamba_sirsasana_wall', 'Salamba Sirsasana (wall)', 'Headstand at the wall', 'props', 0,
+    { s: [-90, -90], h: -90, l: [90, 90, [0, 0.7]], a: [[-72, 1], [180, 0.3]], n: 0, props: [['wall', 'P', -0.4]] }],
+  ['viparita_dandasana_chair', 'Viparita Dandasana (chair)', 'Backbend over a chair', 'props', 0,
+    { s: [178, 216], h: [238, 0.9], l: [-10, -54, 0], a: [[222, 0.7], [192, 0.7]], props: [['chair', 'P', -0.75, 1]] }],
+  ['salamba_sarvangasana_chair', 'Salamba Sarvangasana (chair)', 'Chair shoulderstand', 'props', 0,
+    { s: [215, 255], h: [168, 1], l: [80, 80, [170, 0.6]], a: [[12, 0.85], [4, 0.85]], n: 90, props: [['chair', 'P', 0.95, 1], ['box', 'C', -1.3, 2.0, 'under']] }],
+  ['ardha_halasana_chair', 'Ardha Halasana (chair)', 'Half plough, legs resting on a chair', 'props', 0,
+    { s: [-82, -90], h: 180, l: [-170, -170, [-90, 0.5]], a: [0, 0], props: [['chair', 'ankleR', 0.75, -1]] }],
+  ['bharadvajasana_chair', 'Bharadvajasana (chair)', 'Seated twist on a chair', 'props', 1,
+    { l: [-2, -90, 0], aL: [[-140, 0.55], [160, 0.45]], aR: [[-120, 0.6], [176, 0.5]], n: 180, props: [['chair', 'P', 0.6, -1]] }],
+  ['setu_bandha_block', 'Setu Bandha Sarvangasana (block)', 'Supported bridge, block under the sacrum', 'props', 0,
+    { s: [196, 216], h: 180, l: [12, -90, 0], a: [-10, 2], props: [['box', 'P', -0.45, 0.9, 'under']] }],
+  ['supta_baddha_konasana_bolster', 'Supta Baddha Konasana (bolster)', 'Reclining bound angle over a bolster', 'props', 0,
+    { s: [164, 166], h: 172, l: [[24, 0.6], [-150, 0.6], [0, 0.4]], a: [-28, -6], props: [['box', 'C', -0.6, 2.9, 'under', 'M']] }],
+  ['adho_mukha_svanasana_ropes', 'Adho Mukha Svanasana (ropes)', 'Downward dog hanging in the wall rope', 'props', 0,
+    { s: [-38, -36], h: -50, l: [-120, -120, 0], a: [-34, -34], props: [['wall', 'ankleR', -0.4], ['rope', ['m', 'ankleR', -0.4, 'P', 0.5], ['P', 0, 0]]] }],
+  ['uttanasana_ropes', 'Uttanasana (ropes)', 'Hanging forward bend, rope across the hips', 'props', 0,
+    { s: [-66, -88], h: -96, l: [-104, -104, 0], a: { to: 'floor', dx: 0.2, fit: 1 }, props: [['wall', 'ankleR', -0.4], ['rope', ['m', 'ankleR', -0.4, 'P', 0.3], ['P', 0, 0]]] }],
+  ['urdhva_mukha_svanasana_ropes', 'Urdhva Mukha Svanasana (ropes)', 'Upward dog holding the wall ropes', 'props', 0,
+    { s: [62, 84], h: 102, l: [-118, -118, [180, 0.7]], a: [168, 168], props: [['wall', 'ankleR', -0.5], ['rope', ['m', 'ankleR', -0.5, 'handR', 0.9], ['handR', 0, 0]]] }],
+  ['rope_sirsasana', 'Rope Sirsasana', 'Hanging upside down in the ropes', 'props', 0,
+    { s: [-90, -90], h: -90, l: [90, 90, [0, 0.6]], a: [[-90, 0.6], [-90, 0.55]], n: 180, lift: 0.55, props: [['wall', 'P', 0.7], ['rope', ['m', 'P', 0.7, 'P', 0.9], ['P', 0, 0]]] }],
 ];
 
 export const ASANAS = A.map(([id, name, en, cat, sided, pose]) => ({ id, name, en, cat, sided: !!sided, pose }));
@@ -227,11 +259,13 @@ export const SKETCH_SEEDS = {
     [[[658, 287], [790, 143], [928, 302]]],
     [[[1008, 320], [1115, 128], [1265, 310]], circle(1058, 220, 28)],
   ],
-  uttanasana: [
+  uttanasana_wall: [
     [[[135, 238], [113, 470]], [[25, 330], [128, 255]], [[22, 400], [118, 322]], [[18, 438], [112, 366]],
       [[145, 388], [318, 272]], circle(328, 280, 28), [[268, 330], [268, 468]], [[145, 388], [290, 542]]],
     [[[527, 268], [508, 538]], [[472, 356], [534, 294]], [[476, 426], [532, 368]],
       [[512, 405], [655, 250]], circle(672, 268, 35), [[597, 330], [590, 440]], [[512, 405], [622, 555]]],
+  ],
+  uttanasana: [
     [[[905, 377], [1060, 228]], circle(1083, 240, 32), [[1002, 298], [985, 512]], [[905, 377], [1028, 618]]],
   ],
   upavistha_konasana: [

@@ -4,7 +4,7 @@ import { toCloud, mirrorCloud, distance, recognize } from './recognizer.js';
 import { createPad } from './pad.js';
 import * as store from './store.js';
 
-const VERSION = '1.4.0';
+const VERSION = '1.5.0';
 const app = document.getElementById('app');
 const layer = document.getElementById('layer');
 
@@ -154,8 +154,13 @@ function buildSeeds() {
     if (distance(cloud, m) > 1.2) seedTemplates.push({ id, cloud: m, weight });
   };
   for (const a of ASANAS) {
-    pushBoth(a.id, poseStrokes(a.pose, { head: true }), 1);
-    pushBoth(a.id, poseStrokes(a.pose, { head: false }), 1);
+    // Prop versions are matched only with their wall, chair or rope drawn,
+    // so a plain scribble still finds the plain asana first.
+    // In a close call the plain asana wins: a lone line could be a leg or a wall.
+    const props = !!a.pose.props;
+    const weight = props ? 1.15 : 1;
+    pushBoth(a.id, poseStrokes(a.pose, { head: true, props }), weight);
+    pushBoth(a.id, poseStrokes(a.pose, { head: false, props }), weight);
   }
   for (const [id, list] of Object.entries(SKETCH_SEEDS)) for (const strokes of list) pushBoth(id, strokes, 0.85);
 }

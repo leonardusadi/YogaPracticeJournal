@@ -96,15 +96,51 @@ export function solve(p) {
     }
   }
 
-  const g = lowest();
+  const g = lowest() - (p.lift ?? 0); // lift: hang this far above the floor
   for (const key of Object.keys(J)) J[key] = [J[key][0], J[key][1] - g];
   return J;
 }
 
+// Props (wall, chair, ropes, bolsters and blocks) as polylines in pose space.
+// A point is [joint, dx, dy], or ['m', xJoint, dx, yJoint, dy] to take x and y
+// from different joints.
+const SEAT = 2.4;
+function propShapes(p, J) {
+  const out = [];
+  const pt = (s) => (s[0] === 'm' ? [J[s[1]][0] + s[2], J[s[3]][1] + s[4]] : [J[s[0]][0] + (s[1] ?? 0), J[s[0]][1] + (s[2] ?? 0)]);
+  let top = 0;
+  for (const q of Object.values(J)) top = Math.max(top, q[1]);
+  for (const pr of p.props ?? []) {
+    const kind = pr[0];
+    if (kind === 'wall') {
+      const x = J[pr[1]][0] + pr[2];
+      out.push({ cls: 'fw', pts: [[x, 0], [x, Math.max(top + 0.9, 5.5)]] });
+    } else if (kind === 'rope') {
+      out.push({ cls: 'fr', pts: [pt(pr[1]), pt(pr[2])] });
+    } else if (kind === 'chair') {
+      const cx = J[pr[1]][0] + pr[2];
+      const a = cx - 1.15, b = cx + 1.15;
+      const back = (pr[3] ?? 1) > 0 ? b : a;
+      out.push({ cls: 'fp', pts: [[a, 0], [a, SEAT], [b, SEAT], [b, 0]] });
+      out.push({ cls: 'fp', pts: [[back, SEAT], [back, SEAT + 2.4]] });
+    } else if (kind === 'box') {
+      const x = J[pr[1]][0] + pr[2];
+      const hgt = pr[4] === 'under' ? Math.max(0.3, J[pr[5] ?? pr[1]][1] - HALF) : pr[4];
+      out.push({ cls: 'fp', pts: [[x, 0], [x, hgt], [x + pr[3], hgt], [x + pr[3], 0], [x, 0]] });
+    }
+  }
+  return out;
+}
+
 // --- drawing ---------------------------------------------------------------
 
-function bounds(J) {
+function bounds(J, shapes = []) {
   let x0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const sh of shapes) for (const q of sh.pts) {
+    x0 = Math.min(x0, q[0] - HALF);
+    x1 = Math.max(x1, q[0] + HALF);
+    y1 = Math.max(y1, q[1] + HALF);
+  }
   for (const [k, pt] of Object.entries(J)) {
     const r = k === 'H' ? LEN.head + HALF + NOSE : HALF;
     x0 = Math.min(x0, pt[0] - r);
@@ -118,7 +154,8 @@ function bounds(J) {
 // head and tick feet. opts.mirror flips left/right.
 export function poseSVG(p, opts = {}) {
   const J = solve(p);
-  const { x0, x1, y1 } = bounds(J);
+  const shapes = propShapes(p, J);
+  const { x0, x1, y1 } = bounds(J, shapes);
   const w = x1 - x0;
   const hgt = y1;
   const size = Math.max(w, hgt, 6.6) + 1.0;
@@ -146,20 +183,14 @@ export function poseSVG(p, opts = {}) {
   let nose = '';
   if (facing === 'c') nose = `<circle class="fd" cx="${f(H[0])}" cy="${f(H[1])}" r="0.17"/>`;
   else if (facing !== null) nose = `<path class="fk" d="${line(add(J.H, vec(facing, LEN.head)), add(J.H, vec(facing, LEN.head + NOSE)))}"/>`;
-  let props = '';
-  for (const pr of p.props ?? []) {
-    if (pr[0] === 'wall') {
-      const x = S(add(J[pr[1]], [pr[2], 0]))[0];
-      props += `<line class="fw" x1="${f(x)}" y1="0.4" x2="${f(x)}" y2="${f(oy)}"/>`;
-    }
-  }
+  const props = shapes.map((sh) => `<path class="${sh.cls}" d="${line(...sh.pts)}"/>`).join('');
   const flip = opts.mirror ? ` transform="translate(${f(size)} 0) scale(-1 1)"` : '';
   return `<svg class="fig" viewBox="0 0 ${f(size)} ${f(size)}" aria-hidden="true"><g${flip} stroke-width="${LINE}">${props}` +
     `<path class="fk" d="${d}"/><circle class="fh" cx="${f(H[0])}" cy="${f(H[1])}" r="${LEN.head}"/>${nose}</g></svg>`;
 }
 
 // Plain skeleton as strokes (screen coords, y down) for seeding the recognizer.
-export function poseStrokes(p, { head = true } = {}) {
+export function poseStrokes(p, { head = true, props = false } = {}) {
   const J = solve(p);
   const S = (pt) => [pt[0], -pt[1]];
   const strokes = [];
@@ -182,6 +213,7 @@ export function poseStrokes(p, { head = true } = {}) {
     for (let i = 0; i <= 14; i++) c.push(S(add(J.H, vec((i / 14) * 360, LEN.head))));
     strokes.push(c);
   }
+  if (props) for (const sh of propShapes(p, J)) strokes.push(sh.pts.map(S));
   return strokes;
 }
 
