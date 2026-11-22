@@ -81,10 +81,10 @@ const A = [
     { l: [0, 0, 90], a: { to: 'floor', dx: -0.3, fit: 1 } }],
   ['sukhasana', 'Sukhasana', 'Easy cross-legged', 'seated', 0,
     { v: 'f', lL: CROSS_L, lR: CROSS_R, aL: { to: 'kneeL', fit: 1, off: [0.1, 0.2] }, aR: { to: 'kneeR', fit: 1, off: [-0.1, 0.2] } }],
-  ['swastikasana', 'Swastikasana', 'Cross-legged seat, feet tucked under the opposite knees', 'seated', 0,
+  ['swastikasana', 'Svastikasana', 'Cross-legged seat (Swastikasana), feet tucked under the opposite knees', 'seated', 0,
     { v: 'f', lL: [[-156, 0.8], [-8, 1.05], [10, 0.3]], lR: [[-24, 0.8], [-172, 1.05], [170, 0.3]], aL: { to: 'kneeL', fit: 1, off: [0.15, 0.25] }, aR: { to: 'kneeR', fit: 1, off: [-0.15, 0.25] } }],
-  ['eka_pada_swastikasana', 'Eka Pada Swastikasana', 'Front leg folded as in Swastikasana, back leg straight behind', 'seated', 1,
-    { s: [88, 90], lR: [[-14, 0.95], [-158, 0.8], [180, 0.4]], lL: [-169, -170, 180], a: { to: 'floor', dx: 0.5, fit: 1 } }],
+  ['eka_pada_swastikasana', 'Eka Pada Svastikasana', 'Front leg folded as in Svastikasana (Swastikasana), back leg straight behind, torso folded forward', 'seated', 1,
+    { s: [12, -12], h: -32, lR: [[-14, 0.95], [-158, 0.8], [180, 0.4]], lL: [-169, -170, 180], a: { to: 'floor', dx: 3.3, fit: 1 } }],
   ['parvatasana', 'Parvatasana', 'Seated mountain', 'seated', 0,
     { v: 'f', lL: CROSS_L, lR: CROSS_R, aL: UP_L, aR: UP_R }],
   ['padmasana', 'Padmasana', 'Lotus pose', 'seated', 0,
@@ -116,7 +116,7 @@ const A = [
 
   // ---- forward bends ----
   ['janu_sirsasana', 'Janu Sirsasana', 'Head to knee', 'forward', 1,
-    { s: [38, 12], h: -4, lL: [0, 0, 90], lR: [[-28, 0.5], [-158, 0.55], [180, 0.4]], a: { to: 'toeL', fit: 1 } }],
+    { s: [30, 6], h: -8, lL: [0, 0, 90], lR: [[-130, 0.62], [42, 0.55], [0, 0.3]], a: { to: 'toeL', fit: 1 } }],
   ['paschimottanasana', 'Paschimottanasana', 'Seated forward bend', 'forward', 0,
     { s: [30, 6], h: -8, l: [0, 0, 90], a: { to: 'toeR', fit: 1 } }],
   ['trianga_mukhaikapada_paschimottanasana', 'Trianga Mukhaikapada Paschimottanasana', 'Three-limbed forward bend', 'forward', 1,
@@ -296,6 +296,12 @@ export const SKETCH_SEEDS = {
       [[330, 208], [322, 360]], [[245, 278], [325, 282]], [[245, 283], [245, 358]],
       [[200, 105], [205, 150], [228, 200]], [[246, 95], [245, 160], [228, 200]], [[228, 200], [212, 268]], circle(205, 285, 15),
       [[215, 235], [145, 285]], [[240, 225], [268, 232], [300, 275]]],
+  ],
+  eka_pada_swastikasana: [
+    [[[68, 235], [130, 215], [200, 200], [270, 203], [305, 215]], circle(322, 222, 15), [[240, 208], [215, 240], [255, 243]]],
+  ],
+  janu_sirsasana: [
+    [[[530, 210], [755, 212]], [[755, 212], [745, 180]], [[530, 208], [690, 160]], circle(692, 157, 10), [[530, 210], [487, 295]], [[700, 170], [750, 205]]],
   ],
   upavistha_konasana: [
     [circle(378, 133, 38), [[337, 160], [218, 340]], [[323, 205], [357, 387]], [[240, 320], [467, 230]], [[205, 335], [405, 537]]],
